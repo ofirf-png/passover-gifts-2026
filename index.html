@@ -391,13 +391,12 @@ function pollRemote(force){
     const sc=document.getElementById('sections-container');sc.innerHTML='';
     renderAll();
     if(!fbReady){fbReady=true;showToast('מחובר אונליין - כולם רואים שינויים בזמן אמת')}
-    else showToast('עודכן ממשתמש אחר');
     }catch(ex){var el=document.getElementById('err-log');if(el){el.style.display='block';el.textContent+='POLL: '+ex.message+'\n'}}
   }).catch(()=>setSyncStatus('offline'));
   }catch(ex){var el=document.getElementById('err-log');if(el){el.style.display='block';el.textContent+='POLL2: '+ex.message+'\n'}}
 }
 // Start polling every 4 seconds (gives time for saves to complete)
-setInterval(pollRemote,4000);
+setInterval(pollRemote,30000);
 // Initial fetch after 1 second (let page render first)
 setTimeout(()=>pollRemote(),1000)
 
