@@ -1,0 +1,676 @@
+<html lang="he" dir="rtl"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>מתנות פסח 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+button,.btn,.tab,.tab-close,.tab-edit,.tab-add,.sel-cell input,.sent-cell input,.move-btn,.rchk{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.1)}
+#err-log{position:fixed;bottom:0;left:0;right:0;background:red;color:#fff;font-size:11px;padding:4px 8px;z-index:9999;max-height:80px;overflow:auto;display:none;direction:ltr;font-family:monospace}
+body{font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;padding:12px;direction:rtl;-webkit-text-size-adjust:100%}
+
+/* HEADER */
+.header{text-align:center;padding:24px 16px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;border-radius:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.header h1{font-size:clamp(20px,5vw,28px);margin-bottom:4px;cursor:pointer;display:inline-block;border-bottom:2px solid transparent;transition:.2s}
+.header h1:hover{border-bottom-color:rgba(255,255,255,.4)}
+.header p{opacity:.8;font-size:clamp(12px,3vw,14px);cursor:pointer}
+.header p:hover{opacity:1}
+.h-input{background:0 0;border:none;border-bottom:2px solid #fff;color:#fff;font-size:clamp(20px,5vw,28px);font-weight:700;text-align:center;outline:0;direction:rtl;width:90%}
+.h-sub-input{background:0 0;border:none;border-bottom:1px solid rgba(255,255,255,.5);color:#fff;font-size:14px;text-align:center;outline:0;direction:rtl;width:80%;opacity:.9}
+
+/* GLOBAL SUMMARY */
+.summary-bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+.summary-chip{padding:6px 14px;border-radius:10px;font-size:clamp(11px,2.8vw,13px);font-weight:700;display:flex;align-items:center;gap:4px}
+
+/* GLOBAL TOOLBAR */
+.g-toolbar{display:flex;gap:6px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.tab{padding:8px 14px;border-radius:10px;cursor:pointer;font-size:clamp(12px,3vw,14px);font-weight:600;border:2px solid #ddd;background:#fff;transition:.2s;position:relative;display:flex;align-items:center;gap:6px}
+.tab:hover{border-color:#0f3460}
+.tab.active{background:#0f3460;color:#fff;border-color:#0f3460}
+.tab-name{pointer-events:none}
+.tab-close{font-size:16px;opacity:.3;cursor:pointer;pointer-events:all;padding:0 3px;border-radius:4px;line-height:1}
+.tab-close:hover{opacity:1;background:rgba(231,76,60,.2);color:#e74c3c}
+.tab.active .tab-close:hover{background:rgba(255,255,255,.25);color:#fff}
+.tab-edit{font-size:11px;opacity:.3;cursor:pointer;pointer-events:all}
+.tab-edit:hover{opacity:1}
+.tab.dragging{opacity:.4;transform:scale(.95)}
+.tab.drag-over{border-color:#e67e22;border-style:dashed;background:#fef9e7}
+.tab.active.drag-over{background:#0a2640}
+.tab-count{font-size:10px;background:rgba(0,0,0,.12);color:#555;padding:1px 6px;border-radius:10px;pointer-events:none;font-weight:700;min-width:18px;text-align:center;display:inline-block}
+.tab.active .tab-count{background:rgba(255,255,255,.25);color:#fff}
+.tab-add{padding:8px 14px;border-radius:10px;cursor:pointer;font-size:18px;font-weight:700;border:2px dashed #bbb;background:0 0;color:#888;transition:.2s}
+.tab-add:hover{border-color:#27ae60;color:#27ae60;background:#f0faf4}
+.tab-input{background:0 0;border:none;border-bottom:2px solid currentColor;color:inherit;font-size:14px;font-weight:600;text-align:center;outline:0;width:100px;direction:rtl}
+
+/* SECTION */
+.section{display:none;background:#fff;border-radius:14px;padding:clamp(12px,3vw,24px);box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:16px}
+.section.active{display:block}
+.sec-title{font-size:clamp(16px,4vw,20px);font-weight:700;margin-bottom:2px;color:#1a1a2e}
+.sec-sub{font-size:12px;color:#888;margin-bottom:10px}
+
+/* STATS */
+.stats-bar{display:flex;gap:8px;margin-bottom:10px;font-size:clamp(11px,2.8vw,13px);color:#555;flex-wrap:wrap}
+.stats-bar span{background:#f0f2f5;padding:4px 10px;border-radius:8px}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.btn{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:clamp(11px,2.8vw,13px);font-weight:600;border:none;transition:.2s;display:inline-flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent}
+.btn-add{background:#27ae60;color:#fff}.btn-add:hover{background:#219150}
+.btn-del{background:#e74c3c;color:#fff}.btn-del:hover{background:#c0392b}
+.btn-exp{background:#2980b9;color:#fff}.btn-exp:hover{background:#2471a3}
+.btn-sav{background:#e67e22;color:#fff}.btn-sav:hover{background:#d35400}
+.btn-share{background:#1abc9c;color:#fff}.btn-share:hover{background:#16a085}
+.btn-print{background:#8e44ad;color:#fff}.btn-print:hover{background:#7d3c98}
+.btn-undo{background:#7f8c8d;color:#fff}.btn-undo:hover{background:#6c7a7d}.btn-undo:disabled{opacity:.4;cursor:default}
+.search-box{padding:7px 10px;border:2px solid #ddd;border-radius:8px;font-size:13px;direction:rtl;width:100%;max-width:220px}
+.search-box:focus{outline:0;border-color:#0f3460}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e8e8e8;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:500px}
+thead th{background:#1a1a2e;color:#fff;padding:10px 8px;font-size:clamp(11px,2.5vw,13px);font-weight:600;text-align:right;white-space:nowrap;position:sticky;top:0;z-index:2}
+tbody td{padding:8px;border-bottom:1px solid #f0f0f0;font-size:clamp(12px,3vw,14px);vertical-align:top}
+tbody tr:hover{background:#f8f9ff}
+td[contenteditable="true"]{cursor:text;outline:0;border-radius:4px;transition:background .2s;min-width:60px}
+td[contenteditable="true"]:focus{background:#fff3cd;box-shadow:inset 0 0 0 2px #f0c040}
+.row-num{color:#aaa;font-size:11px;font-weight:600;text-align:center;width:32px}
+.sel-cell{text-align:center;width:32px}
+.sel-cell input{width:18px;height:18px;cursor:pointer}
+.sent-cell{text-align:center;width:50px}
+.sent-cell input{width:20px;height:20px;cursor:pointer;accent-color:#27ae60}
+.notes-cell{min-width:120px;max-width:250px;font-size:clamp(11px,2.5vw,13px);color:#555}
+.counter{font-size:12px;color:#666;margin-right:auto}
+.drag-handle{cursor:grab;color:#bbb;font-size:16px;text-align:center;width:28px}
+.drag-handle:active{cursor:grabbing}
+.drag-handle:hover{color:#555}
+tr.row-dragging{opacity:.4;background:#fef9e7!important}
+tr.row-drag-over td{border-top:3px solid #e67e22!important}
+.move-btns{display:flex;flex-direction:column;gap:1px;align-items:center}
+.move-btn{background:none;border:none;cursor:pointer;font-size:11px;color:#aaa;padding:0 2px;line-height:1}
+.move-btn:hover{color:#0f3460}
+.btn-move{background:#3498db;color:#fff;position:relative}.btn-move:hover{background:#2980b9}
+.move-menu{position:absolute;top:100%;right:0;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:100;min-width:160px;padding:4px 0;display:none}
+.move-menu.show{display:block}
+.move-menu-item{padding:8px 14px;cursor:pointer;font-size:13px;color:#1a1a2e;text-align:right;white-space:nowrap;display:block;width:100%;border:none;background:none;font-family:inherit}
+.move-menu-item:hover{background:#eaf2f8}
+.move-wrap{position:relative;display:inline-block}
+
+/* SYNC STATUS */
+.sync-status{position:fixed;top:8px;left:8px;z-index:1000;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;direction:ltr}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.sync-online{background:rgba(39,174,96,.15);color:#1e8449}.sync-online .sync-dot{background:#27ae60}
+.sync-offline{background:rgba(231,76,60,.15);color:#c0392b}.sync-offline .sync-dot{background:#e74c3c}
+.sync-saving{background:rgba(243,156,18,.15);color:#d35400}.sync-saving .sync-dot{background:#f39c12;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* PROGRESS BAR */
+.progress-wrap{height:8px;background:#eee;border-radius:8px;overflow:hidden;margin-bottom:10px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#27ae60,#2ecc71);border-radius:8px;transition:width .4s}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 24px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .3s;z-index:999;pointer-events:none}
+.toast.show{opacity:1}
+
+/* MOBILE */
+@media(max-width:600px){
+  body{padding:8px}
+  .toolbar{gap:4px}
+  .btn{padding:6px 10px;font-size:11px}
+  .tab{padding:7px 10px;font-size:12px}
+  .search-box{max-width:100%}
+  thead th{padding:8px 5px;font-size:11px}
+  tbody td{padding:6px 5px;font-size:12px}
+  .notes-cell{min-width:80px}
+}
+
+/* PRINT */
+@media print{
+  body{background:#fff;padding:0}
+  .toolbar,.tabs,.btn,.sel-cell,.search-box,.g-toolbar,.hint,.tab-close,.tab-add,.tab-edit,.progress-wrap{display:none!important}
+  .section{display:block!important;box-shadow:none;page-break-inside:avoid}
+  .header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  thead th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="header" id="header">
+  <h1 id="main-title" onclick="editTitle()">מתנות פסח 2026</h1>
+  <p id="sub-title" onclick="editSubtitle()">ניהול מתנות ומשלוחים</p>
+</div>
+
+<div class="summary-bar" id="global-summary">
+    <span class="summary-chip" style="background:#eaf2f8;color:#2471a3">סה"כ חבילות: <b>41</b></span>
+    <span class="summary-chip" style="background:#d5f5e3;color:#1e8449">נשלחו: <b>0</b></span>
+    <span class="summary-chip" style="background:#fadbd8;color:#c0392b">ממתינות: <b>41</b></span>
+    <span class="summary-chip" style="background:#fdebd0;color:#d35400">התקדמות: <b>0%</b></span></div>
+
+<div class="g-toolbar">
+  <button class="btn btn-undo" id="undo-btn" onclick="undo()">↩ בטל</button>
+  <button class="btn btn-sav" onclick="saveData()">שמור</button>
+  <button class="btn btn-share" onclick="downloadHTML()">הורד לשליחה</button>
+  <button class="btn btn-exp" onclick="forceSync()">רענן מהענן</button>
+  <button class="btn btn-print" onclick="window.print()">הדפסה</button>
+</div>
+
+<div class="tabs" id="tabs-container"><div class="tab" data-tabid="giftcard" draggable="true"><span class="tab-name">עובדים בבית</span><span class="tab-count">8</span><span class="tab-edit" title="שנה שם">✎</span><span class="tab-close">×</span></div><div class="tab active" data-tabid="gift" draggable="true"><span class="tab-name">מתנה</span><span class="tab-count">31</span><span class="tab-edit" title="שנה שם">✎</span><span class="tab-close">×</span></div><div class="tab" data-tabid="tab_1" draggable="true"><span class="tab-name">חו״ל</span><span class="tab-count">2</span><span class="tab-edit" title="שנה שם">✎</span><span class="tab-close">×</span></div><div class="tab-add" title="הוסף טאב">+</div></div>
+<div id="sections-container"><div id="giftcard" class="section"></div><div id="gift" class="section active"><div class="sec-title">מתנה</div><div class="sec-sub" onclick="editSecSub('gift')" style="cursor:pointer" title="לחץ לעריכה">רשימת מקבלי מתנות</div>
+    <div class="progress-wrap"><div class="progress-fill" style="width:0%"></div></div>
+    <div class="stats-bar"><span>סה"כ: 31</span><span style="background:#d5f5e3;color:#1e8449">נשלחו: 0</span><span style="background:#fadbd8;color:#c0392b">ממתינות: 31</span><span style="background:#fdebd0;color:#d35400">0%</span></div>
+    <div class="toolbar">
+      <button class="btn btn-add" onclick="addRow('gift')">+ שורה</button>
+      <button class="btn btn-del" onclick="delSelected('gift')">מחק</button>
+      <div class="move-wrap"><button class="btn btn-move" onclick="toggleMoveMenu('gift')">העבר לטאב</button><div class="move-menu" id="move-menu-gift"></div></div>
+      <button class="btn btn-exp" onclick="exportCSV('gift')">CSV</button>
+      <input type="text" class="search-box" placeholder="חיפוש..." oninput="filterRows('gift',this.value)">
+      <span class="counter" id="cnt-gift">31 רשומות</span>
+    </div>
+    <div class="table-wrap"><table id="tbl-gift"><thead><tr><th style="width:28px"></th><th class="sel-cell"><input type="checkbox" onchange="toggleAll('gift',this.checked)"></th><th>#</th><th style="cursor:pointer;" onclick="editColName('gift',1)" title="לחץ לשנות שם עמודה">שם</th><th style="cursor:pointer;" onclick="editColName('gift',2)" title="לחץ לשנות שם עמודה">כתובת</th><th style="cursor:pointer;" onclick="editColName('gift',3)" title="לחץ לשנות שם עמודה">טלפון</th><th style="cursor:pointer;min-width:100px;" onclick="editColName('gift',4)" title="לחץ לשנות שם עמודה">הערות</th><th class="sent-cell">נשלח</th></tr></thead><tbody><tr data-idx="0" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',0)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,0,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns">☰<span class="move-btn" onclick="moveRow('gift',0,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="0"></td><td class="row-num">1</td><td contenteditable="true" onblur="upd('gift',0,1,this.textContent)">ניר אושרוביץ</td><td contenteditable="true" onblur="upd('gift',0,2,this.textContent)">יהודה הנשיא 117, הרצליה</td><td contenteditable="true" onblur="upd('gift',0,3,this.textContent)">0547540577</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',0,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',0,this.checked)"></td></tr><tr data-idx="1" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',1)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,1,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',1,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',1,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="1"></td><td class="row-num">2</td><td contenteditable="true" onblur="upd('gift',1,1,this.textContent)">אסף קידר</td><td contenteditable="true" onblur="upd('gift',1,2,this.textContent)">המייסדים 21 בנימינה</td><td contenteditable="true" onblur="upd('gift',1,3,this.textContent)">0524440295</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',1,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',1,this.checked)"></td></tr><tr data-idx="2" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',2)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,2,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',2,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',2,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="2"></td><td class="row-num">3</td><td contenteditable="true" onblur="upd('gift',2,1,this.textContent)">מריאנה</td><td contenteditable="true" onblur="upd('gift',2,2,this.textContent)">אמיר גלבוע 17, דירה 1, תל אביב</td><td contenteditable="true" onblur="upd('gift',2,3,this.textContent)">0542383536</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',2,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',2,this.checked)"></td></tr><tr data-idx="3" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',3)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,3,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',3,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',3,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="3"></td><td class="row-num">4</td><td contenteditable="true" onblur="upd('gift',3,1,this.textContent)">טלילה&nbsp;</td><td contenteditable="true" onblur="upd('gift',3,2,this.textContent)">שלום עליכם 25, דירה 16, נתניה</td><td contenteditable="true" onblur="upd('gift',3,3,this.textContent)">0525271729</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',3,4,this.textContent)">לוודא כתובת</td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',3,this.checked)"></td></tr><tr data-idx="4" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',4)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,4,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',4,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',4,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="4"></td><td class="row-num">5</td><td contenteditable="true" onblur="upd('gift',4,1,this.textContent)">יואל שוורץ</td><td contenteditable="true" onblur="upd('gift',4,2,this.textContent)">אוגרית 7א, תל אביב</td><td contenteditable="true" onblur="upd('gift',4,3,this.textContent)">0522507534</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',4,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',4,this.checked)"></td></tr><tr data-idx="5" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',5)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,5,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',5,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',5,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="5"></td><td class="row-num">6</td><td contenteditable="true" onblur="upd('gift',5,1,this.textContent)">צביקה ברנשטיין</td><td contenteditable="true" onblur="upd('gift',5,2,this.textContent)">אחד העם 9, קומה 26, מבואה מערבית, תל אביב</td><td contenteditable="true" onblur="upd('gift',5,3,this.textContent)">0506209410</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',5,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',5,this.checked)"></td></tr><tr data-idx="6" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',6)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,6,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',6,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',6,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="6"></td><td class="row-num">7</td><td contenteditable="true" onblur="upd('gift',6,1,this.textContent)">אמיר חצרוני</td><td contenteditable="true" onblur="upd('gift',6,2,this.textContent)">יהודה עמיחי 12, דירה 15, תל אביב</td><td contenteditable="true" onblur="upd('gift',6,3,this.textContent)">0544803820</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',6,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',6,this.checked)"></td></tr><tr data-idx="7" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',7)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,7,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',7,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',7,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="7"></td><td class="row-num">8</td><td contenteditable="true" onblur="upd('gift',7,1,this.textContent)">עידן בוברוב</td><td contenteditable="true" onblur="upd('gift',7,2,this.textContent)">אוריאל אופק 19, הרצליה</td><td contenteditable="true" onblur="upd('gift',7,3,this.textContent)">0542428593</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',7,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',7,this.checked)"></td></tr><tr data-idx="8" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',8)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,8,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',8,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',8,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="8"></td><td class="row-num">9</td><td contenteditable="true" onblur="upd('gift',8,1,this.textContent)">ארז עיני</td><td contenteditable="true" onblur="upd('gift',8,2,this.textContent)">מנחם בגין 48, משרדי BDO, תל אביב</td><td contenteditable="true" onblur="upd('gift',8,3,this.textContent)">0506209018</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',8,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',8,this.checked)"></td></tr><tr data-idx="9" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',9)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,9,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',9,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',9,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="9"></td><td class="row-num">10</td><td contenteditable="true" onblur="upd('gift',9,1,this.textContent)">איתן רייזל</td><td contenteditable="true" onblur="upd('gift',9,2,this.textContent)">ויינברג 3, דירה 20, כפר סבא</td><td contenteditable="true" onblur="upd('gift',9,3,this.textContent)">0547308070</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',9,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',9,this.checked)"></td></tr><tr data-idx="10" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',10)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,10,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',10,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',10,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="10"></td><td class="row-num">11</td><td contenteditable="true" onblur="upd('gift',10,1,this.textContent)">ישי הראל</td><td contenteditable="true" onblur="upd('gift',10,2,this.textContent)">מאפו 17, דירה 8, תל אביב</td><td contenteditable="true" onblur="upd('gift',10,3,this.textContent)">0546886383</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',10,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',10,this.checked)"></td></tr><tr data-idx="11" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',11)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,11,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',11,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',11,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="11"></td><td class="row-num">12</td><td contenteditable="true" onblur="upd('gift',11,1,this.textContent)">רועי מקנזי</td><td contenteditable="true" onblur="upd('gift',11,2,this.textContent)">לבונטין 14, תל אביב. קומה 1, דירה 5</td><td contenteditable="true" onblur="upd('gift',11,3,this.textContent)">0505908515</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',11,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',11,this.checked)"></td></tr><tr data-idx="12" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',12)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,12,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',12,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',12,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="12"></td><td class="row-num">13</td><td contenteditable="true" onblur="upd('gift',12,1,this.textContent)">איציק מקנזי</td><td contenteditable="true" onblur="upd('gift',12,2,this.textContent)">שעל 7, ראשון לציון</td><td contenteditable="true" onblur="upd('gift',12,3,this.textContent)">0549554808</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',12,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',12,this.checked)"></td></tr><tr data-idx="13" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',13)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,13,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',13,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',13,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="13"></td><td class="row-num">14</td><td contenteditable="true" onblur="upd('gift',13,1,this.textContent)">בן קדם</td><td contenteditable="true" onblur="upd('gift',13,2,this.textContent)">קרויס 3 כניסה ב דירה 5, תל אביב</td><td contenteditable="true" onblur="upd('gift',13,3,this.textContent)">0545566261</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',13,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',13,this.checked)"></td></tr><tr data-idx="14" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',14)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,14,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',14,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',14,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="14"></td><td class="row-num">15</td><td contenteditable="true" onblur="upd('gift',14,1,this.textContent)">ואדים</td><td contenteditable="true" onblur="upd('gift',14,2,this.textContent)">כרמל 15, דירה 27 רחובות</td><td contenteditable="true" onblur="upd('gift',14,3,this.textContent)">0545384491</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',14,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',14,this.checked)"></td></tr><tr data-idx="15" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',15)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,15,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',15,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',15,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="15"></td><td class="row-num">16</td><td contenteditable="true" onblur="upd('gift',15,1,this.textContent)">יובל גנני</td><td contenteditable="true" onblur="upd('gift',15,2,this.textContent)">קהילת זיטומיר 7א, תל אביב</td><td contenteditable="true" onblur="upd('gift',15,3,this.textContent)">0506407778</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',15,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',15,this.checked)"></td></tr><tr data-idx="16" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',16)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,16,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',16,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',16,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="16"></td><td class="row-num">17</td><td contenteditable="true" onblur="upd('gift',16,1,this.textContent)">נועם קנטי</td><td contenteditable="true" onblur="upd('gift',16,2,this.textContent)">חנה סנד 9 הוד השרון</td><td contenteditable="true" onblur="upd('gift',16,3,this.textContent)">0544736333</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',16,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',16,this.checked)"></td></tr><tr data-idx="17" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',17)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,17,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',17,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',17,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="17"></td><td class="row-num">18</td><td contenteditable="true" onblur="upd('gift',17,1,this.textContent)">שרון שולמן</td><td contenteditable="true" onblur="upd('gift',17,2,this.textContent)"></td><td contenteditable="true" onblur="upd('gift',17,3,this.textContent)">0544736311</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',17,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',17,this.checked)"></td></tr><tr data-idx="18" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',18)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,18,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',18,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',18,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="18"></td><td class="row-num">19</td><td contenteditable="true" onblur="upd('gift',18,1,this.textContent)">סטיב נסימה</td><td contenteditable="true" onblur="upd('gift',18,2,this.textContent)">בלפור 36, דירה 2, תל אביב</td><td contenteditable="true" onblur="upd('gift',18,3,this.textContent)">0547350160</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',18,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',18,this.checked)"></td></tr><tr data-idx="19" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',19)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,19,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',19,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',19,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="19"></td><td class="row-num">20</td><td contenteditable="true" onblur="upd('gift',19,1,this.textContent)">שגיא בן משה</td><td contenteditable="true" onblur="upd('gift',19,2,this.textContent)">הזית 4, עיין איילה</td><td contenteditable="true" onblur="upd('gift',19,3,this.textContent)">0523721379</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',19,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',19,this.checked)"></td></tr><tr data-idx="20" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',20)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,20,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',20,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',20,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="20"></td><td class="row-num">21</td><td contenteditable="true" onblur="upd('gift',20,1,this.textContent)">אלירן אוזן</td><td contenteditable="true" onblur="upd('gift',20,2,this.textContent)">וורמייזה 15, דירה 18, כניסה ב, תל אביב</td><td contenteditable="true" onblur="upd('gift',20,3,this.textContent)">0506325232</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',20,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',20,this.checked)"></td></tr><tr data-idx="21" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',21)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,21,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',21,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',21,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="21"></td><td class="row-num">22</td><td contenteditable="true" onblur="upd('gift',21,1,this.textContent)">שגב שלטון</td><td contenteditable="true" onblur="upd('gift',21,2,this.textContent)">הבנים 7, רמות השבים</td><td contenteditable="true" onblur="upd('gift',21,3,this.textContent)">0546786786</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',21,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',21,this.checked)"></td></tr><tr data-idx="22" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',22)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,22,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',22,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',22,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="22"></td><td class="row-num">23</td><td contenteditable="true" onblur="upd('gift',22,1,this.textContent)">ירדנה עובדייה</td><td contenteditable="true" onblur="upd('gift',22,2,this.textContent)">הגדרות 25, סביון</td><td contenteditable="true" onblur="upd('gift',22,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',22,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',22,this.checked)"></td></tr><tr data-idx="23" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',23)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,23,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',23,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',23,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="23"></td><td class="row-num">24</td><td contenteditable="true" onblur="upd('gift',23,1,this.textContent)">אילן יונה</td><td contenteditable="true" onblur="upd('gift',23,2,this.textContent)"></td><td contenteditable="true" onblur="upd('gift',23,3,this.textContent)">0503504701</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',23,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',23,this.checked)"></td></tr><tr data-idx="24" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',24)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,24,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',24,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',24,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="24"></td><td class="row-num">25</td><td contenteditable="true" onblur="upd('gift',24,1,this.textContent)">גלעד פז</td><td contenteditable="true" onblur="upd('gift',24,2,this.textContent)">רוטשילד 30, דירה 101, תל אביב</td><td contenteditable="true" onblur="upd('gift',24,3,this.textContent)">0524240034</td><td class="notes-cell" contenteditable="true" onblur="upd('gift',24,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',24,this.checked)"></td></tr><tr data-idx="25" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',25)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,25,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',25,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',25,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="25"></td><td class="row-num">26</td><td contenteditable="true" onblur="upd('gift',25,1,this.textContent)">תמה - אמא של מאיה</td><td contenteditable="true" onblur="upd('gift',25,2,this.textContent)">נאוה סמל 8, קריית אונו</td><td contenteditable="true" onblur="upd('gift',25,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',25,4,this.textContent)">לדבר עם מאיה- 0507317710</td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',25,this.checked)"></td></tr><tr data-idx="26" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',26)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,26,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',26,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',26,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="26"></td><td class="row-num">27</td><td contenteditable="true" onblur="upd('gift',26,1,this.textContent)">ספייר&nbsp;</td><td contenteditable="true" onblur="upd('gift',26,2,this.textContent)">מסגר 35 קומה 16</td><td contenteditable="true" onblur="upd('gift',26,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',26,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',26,this.checked)"></td></tr><tr data-idx="27" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',27)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,27,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',27,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',27,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="27"></td><td class="row-num">28</td><td contenteditable="true" onblur="upd('gift',27,1,this.textContent)">ספייר</td><td contenteditable="true" onblur="upd('gift',27,2,this.textContent)">מסגר 35 קומה 16</td><td contenteditable="true" onblur="upd('gift',27,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',27,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',27,this.checked)"></td></tr><tr data-idx="28" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',28)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,28,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',28,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',28,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="28"></td><td class="row-num">29</td><td contenteditable="true" onblur="upd('gift',28,1,this.textContent)">ספייר</td><td contenteditable="true" onblur="upd('gift',28,2,this.textContent)">מסגר 35 קומה 16</td><td contenteditable="true" onblur="upd('gift',28,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',28,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',28,this.checked)"></td></tr><tr data-idx="29" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',29)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,29,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',29,-1)">▲</span>☰<span class="move-btn" onclick="moveRow('gift',29,1)">▼</span></span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="29"></td><td class="row-num">30</td><td contenteditable="true" onblur="upd('gift',29,1,this.textContent)">ספייר</td><td contenteditable="true" onblur="upd('gift',29,2,this.textContent)">מסגר 35 קומה 16</td><td contenteditable="true" onblur="upd('gift',29,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',29,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',29,this.checked)"></td></tr><tr data-idx="30" data-tid="gift" style="" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'gift',30)"><td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,30,'gift')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns"><span class="move-btn" onclick="moveRow('gift',30,-1)">▲</span>☰</span></td><td class="sel-cell"><input type="checkbox" class="rchk" data-idx="30"></td><td class="row-num">31</td><td contenteditable="true" onblur="upd('gift',30,1,this.textContent)">ספייר</td><td contenteditable="true" onblur="upd('gift',30,2,this.textContent)">מסגר 35 קומה 16</td><td contenteditable="true" onblur="upd('gift',30,3,this.textContent)"></td><td class="notes-cell" contenteditable="true" onblur="upd('gift',30,4,this.textContent)"></td><td class="sent-cell"><input type="checkbox" onchange="toggleSent('gift',30,this.checked)"></td></tr></tbody></table></div></div><div id="tab_1" class="section"></div></div>
+
+<div id="err-log"></div>
+<div class="sync-status sync-online" id="sync-status"><span class="sync-dot"></span><span id="sync-text">מחובר</span></div>
+<div class="toast" id="toast">נשמר בהצלחה!</div>
+
+<script>
+window.onerror=function(m,s,l,c,e){var el=document.getElementById('err-log');if(el){el.style.display='block';el.textContent+='ERR: '+m+' (line '+l+')\n'}};
+const SK='rosh_hashana_gifts_2023_v2';
+let mainTitle='מתנות ראש השנה 2023',subTitle='סקיישילד ואורס - ניהול מתנות ומשלוחים';
+let tabOrder=['giftcard','gift','delivery1','delivery2','sharon'];
+let tabNames={giftcard:'גיפטקארד + מתנה',gift:'מתנה',delivery1:'משלוח - דוד וולפסון',delivery2:'משלוח - המסגר 35',sharon:'אנשים של שרון'};
+let nextTabId=1,currentTab='giftcard';
+
+const DD={
+giftcard:{title:'גיפטקארד 550 + מתנה 250',subtitle:'אנשים מחוץ לחברה',columns:['#','שם','שונים','טלפון','הערות','נשלח'],rows:[
+['1','יוסי כהן','משרד','','',false],['2','אילן יונה','משרד','','',false],['3','אופיר','משרד','','',false],
+['4','דיאנה','דרך הראשונים 27, בני עטרות','0507318662','',false],['5','ישראל (נהג)','דליה רביקוביץ 4 יבנה','0507401953','',false],
+['6','קובי סבג (שף)','הורד 304 מושב בניה','0506669033','',false],['7','תומר אטלס','מורדי הגטאות 5 גבעתיים','0546105386','',false],
+['8','פטייב אמיד','','','',false],['9','דריה סמולניקוביץ','','','',false]]},
+gift:{title:'מתנה',subtitle:'רשימת מקבלי מתנות',columns:['#','שם','כתובת','טלפון','הערות','נשלח'],rows:[
+['1','ניר אושרוביץ','יהודה הנשיא 117 הרצליה','0547540577','',false],
+['2','מריאנה','אייזק שטרן 12 דירה 6 תל אביב','0542383536','',false],
+['3','צביקה ברנשטיין','אחד העם 9, קומה 26, מבואה מערבית, תל אביב','0506209410','',false],
+['4','אמיר חצרוני','יהודה עמיחי 12, דירה 15, תל אביב','0544803820','',false],
+['5','שי ברקה','יגאל אלון 94, תל אביב','0544322868','',false],
+['6','עידן בוברוב','יגאל אלון 94, תל אביב','0542428593','',false],
+['7','דודי יתום','16 Kythnou st. Limassol, Cyprus 4044','0542303535','',false],
+['8','ארז עיני','מנחם בגין 48, משרדי BDO, תל אביב','036386868','',false],
+['9','עדי זכאי','שלדג 15 סביון','0544453598','',false],
+['10','יגאל זכאי','אמירים 29 סביון','0505336002','',false],
+['11','יוסי פרידמן','יהודה הלוי 6, דירה 3, תל אביב','0528994470','',false],
+['12','דויד פרידמן','','','',false],
+['13','איתן רייזל','ויינברג 3, כפר סבא','0547308070','',false],
+['14','ישי','מאפו 17, תל אביב','0546886383','',false],
+['15','יואל שוורץ','הברזל 2א, קומה 3, בית ניסקו, רמת החייל, תל אביב','036445040','',false],
+['16','רועי מקנזי','לבונטין 14, תל אביב. קומה 1, דירה 5','0505908515','',false],
+['17','איציק מקנזי','שעל 7 ראשון לציון','0549554808','',false],
+['18','בן קדם','קרויס 3 כניסה ב דירה 5, תל אביב','54-556-6261','',false],
+['19','ואדים','כרמל 15, רחובות','54-538-4491','',false],
+['20','יובל גנני','קהילת זיטומיר 7 א תל אביב','0506407778','',false],
+['21','אסף קידר','המייסדים 21 בנימינה','0524440295','',false],
+['22','רונן גולדברג','רחוב המעלות 6 דירה 2 כפר סבא','0542333803','',false],
+['23','סטיב נסימה','אחד העם 55 תל אביב גלריה נסימה לנדאו בקומת קרקע','547350160','',false],
+['24','רון יקר','רחוב כוכבן 32 הוד השרון','542471770','',false],
+['25','אלי אוזן','יהושע בן נון 10, דירה 3, תל אביב','0542471770','',false],
+['26','נועם קנטי','חנה סנד 9 הוד השרון','0544736333','',false],
+['27','שגיא בן משה','הזית 4 עין איילה','0523721379','',false],
+['28','טלילה (דיילת)','','0525271729','',false],
+['29','ספייר','מסגר 35 קומה 16','','',false],
+['30','ספייר','מסגר 35 קומה 16','','',false]]},
+delivery1:{title:'משלוח - דוד וולפסון 22, פתח תקווה',subtitle:'יום שלישי - משלוח לפיזור',columns:['#','שם','כתובת','טלפון','הערות','נשלח'],rows:[
+['1','ניר אושרוביץ','יהודה הנשיא 117 הרצליה','0547540577','',false],
+['2','מריאנה','אייזק שטרן 12 דירה 6 תל אביב','0542383536','',false],
+['3','צביקה ברנשטיין','אחד העם 9, קומה 26, מבואה מערבית, תל אביב','0506209410','',false],
+['4','אמיר חצרוני','יהודה עמיחי 12, דירה 15, תל אביב','0544803820','',false],
+['5','שי ברקה','יגאל אלון 94, תל אביב','0544322868','',false],
+['6','עידן בוברוב','יגאל אלון 94, תל אביב','0542428593','',false],
+['7','ארז עיני','מנחם בגין 48, משרדי BDO, תל אביב','036386868','',false],
+['8','עדי זכאי','שלדג 15 סביון','0544453598','',false],
+['9','יגאל זכאי','אמירים 29 סביון','0505336002','',false],
+['10','יוסי פרידמן','יהודה הלוי 6, דירה 3, תל אביב','0528994470','',false],
+['11','דויד פרידמן','הסנפיר 5, דירה 30 יבנה','544274056','',false],
+['12','איתן רייזל','ויינברג 3, כפר סבא','0547308070','',false],
+['13','ישי','מאפו 17, תל אביב','0546886383','',false],
+['14','יואל שוורץ','הברזל 2א, קומה 3, בית ניסקו, רמת החייל, תל אביב','036445040','',false],
+['15','רועי מקנזי','לבונטין 14, תל אביב. קומה 1, דירה 5','0505908515','',false],
+['16','איציק מקנזי','שעל 7 ראשון לציון','0549554808','',false],
+['17','בן קדם','קרויס 3 כניסה ב דירה 5, תל אביב','54-556-6261','',false],
+['18','ואדים','כרמל 15, רחובות','54-538-4491','',false],
+['19','יובל גנני','קהילת זיטומיר 7 א תל אביב','0506407778','',false],
+['20','אסף קידר','המייסדים 21 בנימינה','0524440295','',false],
+['21','רונן גולדברג','רחוב המעלות 6 דירה 2 כפר סבא','0542333803','',false],
+['22','סטיב נסימה','אחד העם 55 תל אביב גלריה נסימה לנדאו בקומת קרקע','547350160','',false],
+['23','רון יקר','רחוב כוכבן 32 הוד השרון','542471770','',false],
+['24','אלי אוזן','יהושע בן נון 10, דירה 3, תל אביב','0542471770','',false],
+['25','נועם קנטי','חנה סנד 9 הוד השרון','0544736333','',false],
+['26','שגיא בן משה','הזית 4 עין איילה','0523721379','',false],
+['27','טלילה (דיילת)','שלום עליכם 25, דירה 16 קומה 4 נתניה','0525271729','',false],
+['28','ספייר','מסגר 35 קומה 16, תל אביב','0527828333','',false],
+['29','ספייר','מסגר 35 קומה 16, תל אביב','0527828333','',false],
+['30','ספייר','מסגר 35 קומה 16, תל אביב','0527828333','',false]]},
+delivery2:{title:'משלוח - המסגר 35 קומה 16, תל אביב',subtitle:'יום שלישי - משלוח לפיזור',columns:['#','שם','כתובת','טלפון','הערות','נשלח'],rows:[
+['1','אסף כהן','לוי אשכול 36 תל אביב','0507360081','',false],
+['2','בועז אסייג','פרץ ברנשטיין 2/25 א רמת שרת ירושלים','050-6909909','',false],
+['3','עמי גניש','שי עגנון 59 קומה 1 דירה 3 בת ים','0528777047','',false],
+['4','דוד סויסה','יאיר רוזנבלום 10 דירה 12 רעננה','050456 3531','',false],
+['5','דורון שלו','השונית 8 דירה 32, קומה 8, יבנה','0542096900','',false],
+['6','ליאור טוביה','השחף 1 סביון','503282661','',false],
+['7','אורי בר עוז','יהודה הלוי 10 רמת השרון','','',false],
+['8','גרישה','הצורן 4, נתניה','528098989','',false],
+['9','אורטל','ראש העין, עמל 11 כניסה ב קומה 3 - שוורצ','548421390','',false],
+['10','רמי','ראש העין, עמל 11 כניסה ב קומה 3 - שוורצ','548421390','',false],
+['11','שירה','ראש העין, עמל 11 כניסה ב קומה 3 - שוורצ','548421390','',false],
+['12','ניר','מוסינזון 19, תל אביב (דירה 5)','526000095','',false],
+['13','אליס','שלמה שדרוביצקי 42 פתח תקווה','506202628','',false],
+['14','גלעד','רוטשילד 30 תל אביב דירה 101','524240034','',false],
+['15','יניב','האורן 9 מושב רמת רזיאל','542050299','',false],
+['16','חלי','מגדלי אלון 94, אלון 2, קומה 28, תל אביב','546701005','',false],
+['17','אנה','מגדלי אלון 94, אלון 2, קומה 28, תל אביב','546701005','',false],
+['18','סול','רחוב ויתקין 16 רמת השרון','544736328','',false],
+['19','רמי','רחוב המעגל 42, רמת גן, קומה 2, דירה 10','527575522','',false],
+['20','לי','משרד - הרצוג פוקס נעמן, 6 יצחק שדה תל אביב','545690715','',false],
+['21','ירון','מידטאון, מנחם בגין 144 תל אביב, משרד EY קומה 9','544736322','',false]]},
+sharon:{title:'אנשים ששרון צריכה להביא להם',subtitle:'',columns:['#','שם','הערות','נשלח'],rows:[
+['1','אבי מנהל סקיי טאוור','',false],
+['2','מני מנהל סקיי טאוור','',false],
+['3','עמרי חניון סקיי טאוור','',false]]}
+};
+
+let data;
+const undoStack=[];
+const MAX_UNDO=30;
+
+function snapshot(){
+  undoStack.push(JSON.stringify({data,tabOrder:tabOrder.slice(),tabNames:{...tabNames},mainTitle,subTitle,nextTabId}));
+  if(undoStack.length>MAX_UNDO)undoStack.shift();
+  updateUndoBtn();
+}
+function undo(){
+  if(!undoStack.length){showToast('אין מה לבטל');return}
+  const prev=JSON.parse(undoStack.pop());
+  data=prev.data;tabOrder=prev.tabOrder;tabNames=prev.tabNames;mainTitle=prev.mainTitle;subTitle=prev.subTitle;nextTabId=prev.nextTabId;
+  document.getElementById('main-title').textContent=mainTitle;
+  document.getElementById('sub-title').textContent=subTitle;
+  document.title=mainTitle;
+  if(!tabOrder.includes(currentTab))currentTab=tabOrder[0];
+  // rebuild sections container
+  const sc=document.getElementById('sections-container');sc.innerHTML='';
+  renderAll();persist();updateUndoBtn();showToast('הפעולה בוטלה - מסונכרן לכולם');
+}
+function updateUndoBtn(){const b=document.getElementById('undo-btn');if(b)b.disabled=!undoStack.length}
+
+/* ===== FIREBASE REST API ===== */
+const FB_URL='https://passover-gifts-2026-default-rtdb.firebaseio.com/gifts';
+let fbReady=false,ignoreNext=false;
+
+function setSyncStatus(s){
+  try{
+    const el=document.getElementById('sync-status'),txt=document.getElementById('sync-text');
+    el.className='sync-status sync-'+s;
+    txt.textContent=s==='online'?'מחובר':s==='saving'?'שומר...':s==='offline'?'לא מחובר':'מתחבר...';
+  }catch(e){}
+}
+
+// Firebase converts arrays to objects - this fixes them back
+function fixArrays(obj){
+  if(obj===null||obj===undefined||typeof obj!=='object')return obj;
+  // Check if object looks like an array (has numeric keys 0,1,2...)
+  if(!Array.isArray(obj)&&typeof obj==='object'){
+    const keys=Object.keys(obj);
+    const isArr=keys.length>0&&keys.every((k,i)=>String(i)===k);
+    if(isArr){
+      const arr=[];
+      keys.forEach(k=>{arr[+k]=fixArrays(obj[k])});
+      return arr;
+    }
+  }
+  if(Array.isArray(obj))return obj.map(v=>fixArrays(v));
+  const out={};
+  for(const k in obj)out[k]=fixArrays(obj[k]);
+  return out;
+}
+
+/* ===== STORAGE ===== */
+function loadData(){
+  try{
+    const s=localStorage.getItem(SK);
+    if(s){const p=JSON.parse(s);data=p.data;tabOrder=p.tabOrder||tabOrder;Object.assign(tabNames,p.tabNames||{});mainTitle=p.mainTitle||mainTitle;subTitle=p.subTitle||subTitle;nextTabId=p.nextTabId||1}
+    else data=JSON.parse(JSON.stringify(DD));
+  }catch(e){data=JSON.parse(JSON.stringify(DD))}
+  document.getElementById('main-title').textContent=mainTitle;
+  document.getElementById('sub-title').textContent=subTitle;
+  document.title=mainTitle;
+  currentTab=tabOrder[0]||'giftcard';
+}
+
+function persist(){
+  try{localStorage.setItem(SK,JSON.stringify({data,tabOrder,tabNames,mainTitle,subTitle,nextTabId}))}catch(e){}
+  setSyncStatus('saving');
+  ignoreNext=true;
+  fetch(FB_URL+'.json?nocache='+Date.now(),{method:'PUT',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({data,tabOrder,tabNames,mainTitle,subTitle,nextTabId})})
+    .then(r=>{if(!r.ok)throw 0;setSyncStatus('online');setTimeout(()=>{ignoreNext=false},2000)})
+    .catch(()=>{setSyncStatus('offline');setTimeout(()=>{ignoreNext=false},2000)});
+}
+
+function saveData(){persist();showToast('נשמר בהצלחה!')}
+
+function forceSync(){pollRemote(true)}
+
+// Poll for remote changes
+function pollRemote(force){
+  try{
+  if(ignoreNext&&!force)return;
+  fetch(FB_URL+'.json?nocache='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(val=>{
+    try{
+    if(!val)return;
+    setSyncStatus('online');
+    // Fix Firebase array→object conversion
+    val=fixArrays(val);
+    const newState=JSON.stringify(val);
+    const curState=JSON.stringify({data,tabOrder,tabNames,mainTitle,subTitle,nextTabId});
+    if(newState===curState)return;
+    if(val.data)data=val.data;
+    if(val.tabOrder&&Array.isArray(val.tabOrder))tabOrder=val.tabOrder;
+    if(val.tabNames)tabNames=val.tabNames;
+    if(val.mainTitle)mainTitle=val.mainTitle;
+    if(val.subTitle!==undefined)subTitle=val.subTitle;
+    if(val.nextTabId)nextTabId=val.nextTabId;
+    // Fix all row arrays inside data
+    for(const tid in data){if(data[tid]&&data[tid].rows){
+      data[tid].rows=Array.isArray(data[tid].rows)?data[tid].rows:Object.values(data[tid].rows||{});
+      data[tid].rows=data[tid].rows.map(r=>Array.isArray(r)?r:Object.values(r||{}));
+      data[tid].columns=Array.isArray(data[tid].columns)?data[tid].columns:Object.values(data[tid].columns||{});
+    }}
+    try{localStorage.setItem(SK,JSON.stringify({data,tabOrder,tabNames,mainTitle,subTitle,nextTabId}))}catch(e){}
+    document.getElementById('main-title').textContent=mainTitle;
+    document.getElementById('sub-title').textContent=subTitle;
+    document.title=mainTitle;
+    if(!tabOrder.includes(currentTab))currentTab=tabOrder[0];
+    const sc=document.getElementById('sections-container');sc.innerHTML='';
+    renderAll();
+    if(!fbReady){fbReady=true;showToast('מחובר אונליין - כולם רואים שינויים בזמן אמת')}
+    else showToast('עודכן ממשתמש אחר');
+    }catch(ex){var el=document.getElementById('err-log');if(el){el.style.display='block';el.textContent+='POLL: '+ex.message+'\n'}}
+  }).catch(()=>setSyncStatus('offline'));
+  }catch(ex){var el=document.getElementById('err-log');if(el){el.style.display='block';el.textContent+='POLL2: '+ex.message+'\n'}}
+}
+// Start polling every 4 seconds (gives time for saves to complete)
+setInterval(pollRemote,4000);
+// Initial fetch after 1 second (let page render first)
+setTimeout(()=>pollRemote(),1000)
+
+/* ===== TOAST ===== */
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+
+/* ===== TITLE EDIT ===== */
+function editTitle(){
+  const v=prompt('שם הקובץ:',mainTitle);
+  if(v&&v.trim()){snapshot();mainTitle=v.trim();document.getElementById('main-title').textContent=mainTitle;document.title=mainTitle;persist()}
+}
+function editSubtitle(){
+  const v=prompt('כותרת משנה:',subTitle);
+  if(v&&v.trim()){snapshot();subTitle=v.trim();document.getElementById('sub-title').textContent=subTitle;persist()}
+}
+
+/* ===== GLOBAL SUMMARY ===== */
+function renderGlobalSummary(){
+  let total=0,sent=0;
+  tabOrder.forEach(id=>{if(data[id])data[id].rows.forEach(r=>{total++;if(r[r.length-1]===true)sent++})});
+  const pct=total?Math.round(sent/total*100):0;
+  document.getElementById('global-summary').innerHTML=`
+    <span class="summary-chip" style="background:#eaf2f8;color:#2471a3">סה"כ חבילות: <b>${total}</b></span>
+    <span class="summary-chip" style="background:#d5f5e3;color:#1e8449">נשלחו: <b>${sent}</b></span>
+    <span class="summary-chip" style="background:#fadbd8;color:#c0392b">ממתינות: <b>${total-sent}</b></span>
+    <span class="summary-chip" style="background:#fdebd0;color:#d35400">התקדמות: <b>${pct}%</b></span>`;
+}
+
+/* ===== TABS ===== */
+let dragTabId=null;
+
+function renderTabs(){
+  const c=document.getElementById('tabs-container');c.innerHTML='';
+  tabOrder.forEach(id=>{
+    const t=document.createElement('div');t.className='tab'+(id===currentTab?' active':'');
+    t.dataset.tabid=id;
+    const nm=document.createElement('span');nm.className='tab-name';nm.textContent=tabNames[id]||id;t.appendChild(nm);
+    const cnt=data[id]?data[id].rows.length:0;
+    const badge=document.createElement('span');badge.className='tab-count';badge.textContent=cnt;t.appendChild(badge);
+    const ed=document.createElement('span');ed.className='tab-edit';ed.textContent='\u270E';ed.title='שנה שם';
+    ed.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();startEditTab(id)});t.appendChild(ed);
+    if(tabOrder.length>1){const cl=document.createElement('span');cl.className='tab-close';cl.textContent='\u00d7';cl.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();deleteTab(id)});t.appendChild(cl)}
+    // Simple click/tap - works on desktop and mobile
+    t.addEventListener('click',e=>{
+      if(e.target.classList.contains('tab-close')||e.target.classList.contains('tab-edit'))return;
+      switchTab(id);
+    });
+    // Desktop drag only (skip on touch devices)
+    if(!('ontouchstart' in window)){
+      t.draggable=true;
+      t.addEventListener('dragstart',e=>{dragTabId=id;t.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+    t.addEventListener('dragend',()=>{dragTabId=null;t.classList.remove('dragging');document.querySelectorAll('.tab.drag-over').forEach(x=>x.classList.remove('drag-over'))});
+    t.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';if(dragTabId&&dragTabId!==id)t.classList.add('drag-over')});
+    t.addEventListener('dragleave',()=>t.classList.remove('drag-over'));
+    t.addEventListener('drop',e=>{e.preventDefault();t.classList.remove('drag-over');if(!dragTabId||dragTabId===id)return;snapshot();const from=tabOrder.indexOf(dragTabId),to=tabOrder.indexOf(id);tabOrder.splice(from,1);tabOrder.splice(to,0,dragTabId);persist();renderTabs();showToast('סדר הטאבים עודכן')});
+    } // end desktop-only drag
+    c.appendChild(t);
+  });
+  const ab=document.createElement('div');ab.className='tab-add';ab.textContent='+';ab.title='הוסף טאב';ab.addEventListener('click',addNewTab);c.appendChild(ab);
+}
+
+function startEditTab(id){
+  const newName=prompt('שם חדש לטאב:',tabNames[id]);
+  if(newName&&newName.trim()){snapshot();tabNames[id]=newName.trim();data[id].title=newName.trim();renderTabs();if(currentTab===id)renderTable(id);persist();showToast('שם עודכן')}
+}
+
+function addNewTab(){
+  snapshot();const id='tab_'+nextTabId++;const nm='טאב חדש';
+  tabOrder.push(id);tabNames[id]=nm;
+  data[id]={title:nm,subtitle:'',columns:['#','שם','כתובת','טלפון','הערות','נשלח'],rows:[]};
+  ensureSections();switchTab(id);persist();showToast('טאב חדש נוסף');
+}
+
+function deleteTab(id){
+  if(tabOrder.length<=1){showToast('אי אפשר למחוק את האחרון');return}
+  if(!confirm('למחוק את "'+tabNames[id]+'"?'))return;
+  snapshot();const i=tabOrder.indexOf(id);tabOrder.splice(i,1);delete tabNames[id];delete data[id];
+  const el=document.getElementById(id);if(el)el.remove();
+  if(currentTab===id)currentTab=tabOrder[Math.min(i,tabOrder.length-1)];
+  renderAll();persist();showToast('הטאב נמחק');
+}
+
+function switchTab(id){currentTab=id;ensureSections();document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');renderTabs();renderTable(id)}
+
+function ensureSections(){const c=document.getElementById('sections-container');tabOrder.forEach(id=>{if(!document.getElementById(id)){const d=document.createElement('div');d.id=id;d.className='section';c.appendChild(d)}})}
+
+/* ===== SECTION SUBTITLE EDIT ===== */
+function editSecSub(tid){
+  const v=prompt('תיאור / כותרת משנה:',data[tid].subtitle||'');
+  if(v!==null){snapshot();data[tid].subtitle=v.trim();persist();renderTable(tid);showToast('תיאור עודכן')}
+}
+
+/* ===== COLUMN NAME EDIT ===== */
+function editColName(tid,ci){
+  const v=prompt('שם חדש לעמודה:',data[tid].columns[ci]);
+  if(v!==null&&v.trim()){snapshot();data[tid].columns[ci]=v.trim();persist();renderTable(tid);showToast('שם עמודה עודכן')}
+}
+
+/* ===== TABLE ===== */
+function renderTable(tid){
+  const d=data[tid];if(!d)return;
+  const rows=d.rows,total=rows.length,sent=rows.filter(r=>r[r.length-1]===true).length,pct=total?Math.round(sent/total*100):0;
+  const lc=d.columns.length-1; // last col = נשלח
+  const nc=lc-1; // notes = second to last column (before נשלח)
+  const sec=document.getElementById(tid);
+  let h=`<div class="sec-title">${d.title}</div><div class="sec-sub" onclick="editSecSub('${tid}')" style="cursor:pointer" title="לחץ לעריכה">${d.subtitle||'לחץ להוספת תיאור'}</div>
+    <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="stats-bar"><span>סה"כ: ${total}</span><span style="background:#d5f5e3;color:#1e8449">נשלחו: ${sent}</span><span style="background:#fadbd8;color:#c0392b">ממתינות: ${total-sent}</span><span style="background:#fdebd0;color:#d35400">${pct}%</span></div>
+    <div class="toolbar">
+      <button class="btn btn-add" onclick="addRow('${tid}')">+ שורה</button>
+      <button class="btn btn-del" onclick="delSelected('${tid}')">מחק</button>
+      <div class="move-wrap"><button class="btn btn-move" onclick="toggleMoveMenu('${tid}')">העבר לטאב</button><div class="move-menu" id="move-menu-${tid}"></div></div>
+      <button class="btn btn-exp" onclick="exportCSV('${tid}')">CSV</button>
+      <input type="text" class="search-box" placeholder="חיפוש..." oninput="filterRows('${tid}',this.value)">
+      <span class="counter" id="cnt-${tid}">${total} רשומות</span>
+    </div>
+    <div class="table-wrap"><table id="tbl-${tid}"><thead><tr><th style="width:28px"></th><th class="sel-cell"><input type="checkbox" onchange="toggleAll('${tid}',this.checked)"></th>`;
+  d.columns.forEach((c,ci)=>{
+    if(ci===0)h+=`<th>#</th>`;
+    else if(ci===lc)h+=`<th class="sent-cell">${c}</th>`;
+    else h+=`<th style="cursor:pointer;${ci===nc?'min-width:100px;':''}" onclick="editColName('${tid}',${ci})" title="לחץ לשנות שם עמודה">${c}</th>`;
+  });
+  h+=`</tr></thead><tbody>`;
+  rows.forEach((row,i)=>{
+    const isSent=row[row.length-1]===true;
+    h+=`<tr data-idx="${i}" data-tid="${tid}" style="${isSent?'background:#f0faf4':''}" ondragover="rowDragOver(event)" ondragleave="rowDragLeave(event)" ondrop="rowDrop(event,'${tid}',${i})">`;
+    h+=`<td class="drag-handle" draggable="true" ondragstart="rowDragStart(event,${i},'${tid}')" ondragend="rowDragEnd(event)" title="גרור לשינוי סדר"><span class="move-btns">`;
+    if(i>0)h+=`<span class="move-btn" onclick="moveRow('${tid}',${i},-1)">&#9650;</span>`;
+    h+=`&#9776;`;
+    if(i<rows.length-1)h+=`<span class="move-btn" onclick="moveRow('${tid}',${i},1)">&#9660;</span>`;
+    h+=`</span></td>`;
+    h+=`<td class="sel-cell"><input type="checkbox" class="rchk" data-idx="${i}"></td>`;
+    row.forEach((cell,j)=>{
+      if(j===0)h+=`<td class="row-num">${cell}</td>`;
+      else if(j===row.length-1)h+=`<td class="sent-cell"><input type="checkbox" ${cell?'checked':''} onchange="toggleSent('${tid}',${i},this.checked)"></td>`;
+      else if(j===nc&&d.columns.length>3)h+=`<td class="notes-cell" contenteditable="true" onblur="upd('${tid}',${i},${j},this.textContent)">${cell||''}</td>`;
+      else h+=`<td contenteditable="true" onblur="upd('${tid}',${i},${j},this.textContent)">${cell}</td>`;
+    });
+    h+=`</tr>`;
+  });
+  h+=`</tbody></table></div>`;
+  sec.innerHTML=h;
+  renderGlobalSummary();
+}
+
+/* ===== ROW DRAG & MOVE ===== */
+let dragRowIdx=null,dragRowTid=null;
+function rowDragStart(e,i,tid){e.stopPropagation();dragRowIdx=i;dragRowTid=tid;e.currentTarget.closest('tr').classList.add('row-dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setDragImage(e.currentTarget.closest('tr'),0,0)}
+function rowDragEnd(e){dragRowIdx=null;dragRowTid=null;const tr=e.currentTarget.closest?e.currentTarget.closest('tr'):e.currentTarget;tr.classList.remove('row-dragging');document.querySelectorAll('.row-drag-over').forEach(r=>r.classList.remove('row-drag-over'))}
+function rowDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';const tr=e.currentTarget;if(dragRowIdx!==null&&+tr.dataset.idx!==dragRowIdx)tr.classList.add('row-drag-over')}
+function rowDragLeave(e){e.currentTarget.classList.remove('row-drag-over')}
+function rowDrop(e,tid,toIdx){
+  e.preventDefault();e.currentTarget.classList.remove('row-drag-over');
+  if(dragRowIdx===null||dragRowTid!==tid||dragRowIdx===toIdx)return;
+  snapshot();const rows=data[tid].rows,moved=rows.splice(dragRowIdx,1)[0];rows.splice(toIdx,0,moved);
+  rows.forEach((r,i)=>r[0]=String(i+1));
+  persist();renderTable(tid);showToast('סדר השורות עודכן');
+}
+function moveRow(tid,idx,dir){
+  const to=idx+dir;if(to<0||to>=data[tid].rows.length)return;
+  snapshot();const rows=data[tid].rows,[row]=rows.splice(idx,1);rows.splice(to,0,row);
+  rows.forEach((r,i)=>r[0]=String(i+1));
+  persist();renderTable(tid);
+}
+
+/* ===== MOVE ROWS TO ANOTHER TAB ===== */
+function toggleMoveMenu(tid){
+  const menu=document.getElementById('move-menu-'+tid);
+  const isOpen=menu.classList.contains('show');
+  document.querySelectorAll('.move-menu').forEach(m=>m.classList.remove('show'));
+  if(isOpen)return;
+  menu.innerHTML='';
+  tabOrder.forEach(id=>{
+    if(id===tid)return;
+    const btn=document.createElement('button');btn.className='move-menu-item';
+    btn.textContent=tabNames[id]||id;
+    btn.onclick=e=>{e.stopPropagation();moveSelectedToTab(tid,id);menu.classList.remove('show')};
+    menu.appendChild(btn);
+  });
+  menu.classList.add('show');
+  setTimeout(()=>{document.addEventListener('click',function closeMenu(){menu.classList.remove('show');document.removeEventListener('click',closeMenu)})},10);
+}
+function moveSelectedToTab(fromTid,toTid){
+  const cks=document.querySelectorAll(`#tbl-${fromTid} .rchk:checked`);
+  if(!cks.length){showToast('לא נבחרו שורות');return}
+  snapshot();
+  const indices=Array.from(cks).map(c=>+c.dataset.idx).sort((a,b)=>b-a);
+  const moved=[];
+  indices.forEach(i=>{moved.unshift(data[fromTid].rows.splice(i,1)[0])});
+  data[fromTid].rows.forEach((r,i)=>r[0]=String(i+1));
+  // adapt columns: match target columns, fill missing with ''
+  const fromCols=data[fromTid].columns;
+  const toCols=data[toTid].columns;
+  moved.forEach(row=>{
+    const newRow=[String(data[toTid].rows.length+1)];
+    for(let ci=1;ci<toCols.length-1;ci++){
+      const colName=toCols[ci];
+      const fromIdx=fromCols.indexOf(colName);
+      newRow.push(fromIdx>0?row[fromIdx]:'');
+    }
+    newRow.push(row[row.length-1]); // keep נשלח status
+    data[toTid].rows.push(newRow);
+  });
+  data[toTid].rows.forEach((r,i)=>r[0]=String(i+1));
+  persist();renderTable(fromTid);renderTabs();
+  showToast(moved.length+' שורות הועברו ל"'+tabNames[toTid]+'"');
+}
+
+function toggleSent(tid,i,v){
+  snapshot();data[tid].rows[i][data[tid].rows[i].length-1]=v;persist();
+  // Update row background without full re-render (preserves active edits)
+  const tr=document.querySelector(`#tbl-${tid} tr[data-idx="${i}"]`);
+  if(tr)tr.style.background=v?'#f0faf4':'';
+  renderGlobalSummary();
+  // Update stats bar and progress without full re-render
+  const rows=data[tid].rows,total=rows.length,sent=rows.filter(r=>r[r.length-1]===true).length,pct=total?Math.round(sent/total*100):0;
+  const sec=document.getElementById(tid);
+  const pb=sec.querySelector('.progress-fill');if(pb)pb.style.width=pct+'%';
+  const sb=sec.querySelector('.stats-bar');
+  if(sb)sb.innerHTML=`<span>סה"כ: ${total}</span><span style="background:#d5f5e3;color:#1e8449">נשלחו: ${sent}</span><span style="background:#fadbd8;color:#c0392b">ממתינות: ${total-sent}</span><span style="background:#fdebd0;color:#d35400">${pct}%</span>`;
+}
+let _updTimer=null;let _updSnapped=false;
+function upd(tid,i,j,v){if(!_updSnapped){snapshot();_updSnapped=true}data[tid].rows[i][j]=v;persist();clearTimeout(_updTimer);_updTimer=setTimeout(()=>{_updSnapped=false},2000)}
+function addRow(tid){
+  snapshot();const d=data[tid],n=String(d.rows.length+1),r=[n];
+  for(let i=1;i<d.columns.length-1;i++)r.push('');
+  r.push(false);d.rows.push(r);persist();renderTable(tid);renderTabs();showToast('שורה נוספה');
+  setTimeout(()=>{const tbl=document.getElementById('tbl-'+tid);if(tbl){const lr=tbl.querySelector('tbody tr:last-child');if(lr)lr.scrollIntoView({behavior:'smooth',block:'nearest'})}},50)
+}
+function delSelected(tid){
+  const cks=document.querySelectorAll(`#tbl-${tid} .rchk:checked`);
+  if(!cks.length){showToast('לא נבחרו שורות');return}
+  snapshot();const ix=Array.from(cks).map(c=>+c.dataset.idx).sort((a,b)=>b-a);
+  ix.forEach(i=>data[tid].rows.splice(i,1));
+  data[tid].rows.forEach((r,i)=>r[0]=String(i+1));
+  persist();renderTable(tid);renderTabs();showToast(ix.length+' שורות נמחקו');
+}
+function toggleAll(tid,v){document.querySelectorAll(`#tbl-${tid} .rchk`).forEach(c=>c.checked=v)}
+function filterRows(tid,q){
+  const rows=document.querySelectorAll(`#tbl-${tid} tbody tr`);let vis=0;
+  rows.forEach(r=>{const s=r.textContent.toLowerCase().includes(q.toLowerCase());r.style.display=s?'':'none';if(s)vis++});
+  document.getElementById('cnt-'+tid).textContent=vis+' רשומות';
+}
+function exportCSV(tid){
+  const d=data[tid],BOM='\uFEFF';let csv=BOM+d.columns.join(',')+'\n';
+  d.rows.forEach(r=>{csv+=r.map((c,j)=>j===r.length-1?(c?'"כן"':'"לא"'):`"${(c||'').toString().replace(/"/g,'""')}"`).join(',')+'\n'});
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8;'}),u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download=d.title+'.csv';a.click();URL.revokeObjectURL(u);showToast('CSV יורד...');
+}
+
+/* ===== DOWNLOAD HTML ===== */
+function downloadHTML(){
+  const html=document.documentElement.outerHTML;
+  const b=new Blob([html],{type:'text/html;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download=(mainTitle||'gifts')+'.html';a.click();URL.revokeObjectURL(u);showToast('הקובץ מוכן לשליחה! כל מי שפותח אותו יתחבר אוטומטית');
+}
+
+/* ===== RENDER ALL ===== */
+function renderAll(){ensureSections();renderTabs();renderGlobalSummary();
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(currentTab);if(el)el.classList.add('active');renderTable(currentTab)}
+
+/* ===== KEYBOARD SHORTCUTS ===== */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.target.isContentEditable){e.preventDefault();undo()}
+});
+
+/* ===== INIT ===== */
+loadData();renderAll();
+// Push initial data to Firebase if database is empty
+fetch(FB_URL+'.json?nocache='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(val=>{
+  if(!val){persist();showToast('נתונים הועלו לענן')}
+}).catch(()=>{});
+</script>
+
+</body></html>
